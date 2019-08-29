@@ -1,0 +1,26 @@
+{
+  "appId": {
+    "title": "App ID",
+    "type": "string",
+    "default": "rarbg-addon-4k",
+    "required": true
+  },
+  "token": {
+    "title": "Token",
+    "type": "string",
+    "default": "834mdti512",
+    "required": true
+  },
+  "minSeeders": {
+    "title": "Min. amount of seeders",
+    "type": "number",
+    "default": 0,
+    "required": true
+  },
+  "sortingMethod": {
+    "title": "Sort",
+    "type": "select",
+    "options": ["seeders", "leechers", "last"],
+    "required": true
+  }
+}
