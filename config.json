@@ -5,12 +5,6 @@
     "default": "rarbg-addon-4k",
     "required": true
   },
-  "token": {
-    "title": "Token",
-    "type": "string",
-    "default": "834mdti512",
-    "required": true
-  },
   "minSeeders": {
     "title": "Min. amount of seeders",
     "type": "number",
