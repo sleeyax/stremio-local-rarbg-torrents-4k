@@ -2,7 +2,7 @@
   "appId": {
     "title": "App ID",
     "type": "string",
-    "default": "rarbg-addon-4k",
+    "default": "rarbg-addon-4k4",
     "required": true
   },
   "minSeeders": {
