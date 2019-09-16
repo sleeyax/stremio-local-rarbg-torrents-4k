@@ -1,10 +1,28 @@
 const request = require('request');
-const {config} = require('internal');
+const { config, persist } = require('internal');
+
+let token = persist.token || ''
+
+request({
+    uri: 'https://torrentapi.org/pubapi_v2.php',
+    qs: { get_token: 'get_token', app_id: config.appId },
+    json: true,
+    headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0'
+    }
+}, (error, response, body) => {
+    if ((body || {}).token) {
+        console.log('RARBG 4k: Successfully fetched API token')
+        token = body.token
+    } else
+        console.log('RARBG 4k: ' + ((error || {}).message || 'Unknown error while fetching API token'))
+});
+
 
 class TorrentApi {
     queryAPI(mode, params = {}, format = 'json_extended') {
         params.app_id = config.appId;
-        params.token = config.token;
+        params.token = token;
         params.sort = config.sortingMethod;
         params.min_seeders = config.minSeeders;
         params.mode = mode;
