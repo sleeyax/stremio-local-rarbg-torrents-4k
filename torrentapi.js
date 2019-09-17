@@ -1,10 +1,13 @@
 const request = require('request');
 const { config, persist } = require('internal');
+const randomWords = require('./randomWords');
+
+const app_id = config.appId || randomWords(2).join('_');
 
 class TorrentApi {
     async queryAPI(mode, params = {}, format = 'json_extended') {
-        params.app_id = config.appId;
-        params.token = persist.getItem('token') || await this.getToken(config.appId);
+        params.app_id = app_id;
+        params.token = persist.getItem('token') || await this.getToken();
         params.sort = config.sortingMethod;
         params.min_seeders = config.minSeeders;
         params.mode = mode;
@@ -22,17 +25,18 @@ class TorrentApi {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0'
                 }
             }, (error, response, body) => {
+                console.log(response.statusCode)
                 if (error) reject(error);
                 resolve(body);
             });
         });
     }
 
-    getToken(appId) {
+    getToken() {
         return new Promise((resolve, reject) => {
             request({
                 uri: 'https://torrentapi.org/pubapi_v2.php',
-                qs: { get_token: 'get_token', app_id: appId },
+                qs: { get_token: 'get_token', app_id },
                 json: true,
                 headers: {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0'
