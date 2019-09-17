@@ -9,7 +9,6 @@ class TorrentApi {
     async queryAPI(mode, params = {}, format = 'json_extended') {
         params.app_id = app_id;
         params.token = await this.getToken();
-        console.log('token is: ' + params.token)
         params.sort = config.sortingMethod;
         params.min_seeders = config.minSeeders;
         params.mode = mode;
