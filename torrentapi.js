@@ -1,13 +1,15 @@
 const request = require('request');
 const { config, persist } = require('internal');
 const randomWords = require('./randomWords');
+const mins15 = 15 * 60 * 1000;
 
 const app_id = config.appId || randomWords(2).join('_');
 
 class TorrentApi {
     async queryAPI(mode, params = {}, format = 'json_extended') {
         params.app_id = app_id;
-        params.token = persist.getItem('token') || await this.getToken();
+        params.token = await this.getToken();
+        console.log('token is: ' + params.token)
         params.sort = config.sortingMethod;
         params.min_seeders = config.minSeeders;
         params.mode = mode;
@@ -32,6 +34,12 @@ class TorrentApi {
     }
 
     getToken() {
+
+        const oldToken = persist.getItem('token');
+
+        if (oldToken && Date.now() - persist.getItem('tokenTime') < mins15)
+            return Promise.resolve(oldToken);
+
         return new Promise((resolve, reject) => {
             request({
                 uri: 'https://torrentapi.org/pubapi_v2.php',
@@ -44,6 +52,7 @@ class TorrentApi {
                 if (error) reject(error);
                 if (!body.token) reject('rarbg-4k: token not found in response');
                 persist.setItem('token', body.token);
+                persist.setItem('tokenTime', Date.now());
                 resolve(body.token);
             });
         });
