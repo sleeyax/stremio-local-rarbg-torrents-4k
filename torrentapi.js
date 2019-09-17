@@ -52,7 +52,12 @@ class TorrentApi {
                 if (!body.token) reject('rarbg-4k: token not found in response');
                 persist.setItem('token', body.token);
                 persist.setItem('tokenTime', Date.now());
-                resolve(body.token);
+
+                // 2 second timeout between requests
+                // as per api specification
+                setTimeout(() => {
+                    resolve(body.token);
+                }, 2000);
             });
         });
     }
