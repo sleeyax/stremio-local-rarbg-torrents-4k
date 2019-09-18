@@ -13,7 +13,7 @@ class TorrentApi {
         params.app_id = app_id;
         params.token = await this.getToken();
         params.sort = config.sortingMethod;
-        params.min_seeders = config.minSeeders;
+        params.min_seeders = 1;
         params.mode = mode;
         params.format = format;
 
