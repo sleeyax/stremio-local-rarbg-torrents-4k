@@ -4,12 +4,6 @@
     "type": "string",
     "default": ""
   },
-  "minSeeders": {
-    "title": "Min. amount of seeders",
-    "type": "number",
-    "default": 1,
-    "required": true
-  },
   "sortingMethod": {
     "title": "Sort",
     "type": "select",
