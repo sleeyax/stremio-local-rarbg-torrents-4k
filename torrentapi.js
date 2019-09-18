@@ -43,6 +43,9 @@ class TorrentApi {
 
                 } else {
 
+                    if ((response || {}).statusCode != 200)
+                        console.log('Rarbg-4k: There was an error with the request, we recommend you change the App ID in the add-on\'s settings and restart the add-on.'
+
                     if (error) reject(error);
                     resolve(body);
 
