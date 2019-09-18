@@ -7,6 +7,7 @@
   "sortingMethod": {
     "title": "Sort",
     "type": "select",
-    "options": ["seeders", "leechers", "last"]
+    "options": ["seeders", "leechers", "last"],
+    "default": "seeders"
   }
 }
