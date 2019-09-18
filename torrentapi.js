@@ -9,7 +9,7 @@ if (!config.appId && !persist.getItem('appId'))
     persist.setItem('appId', app_id);
 
 class TorrentApi {
-    async queryAPI(mode, params = {}, format = 'json_extended') {
+    async queryAPI(mode, params = {}, format = 'json_extended', retrying) {
         params.app_id = app_id;
         params.token = await this.getToken();
         params.sort = config.sortingMethod;
