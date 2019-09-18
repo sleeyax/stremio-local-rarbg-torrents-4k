@@ -29,8 +29,24 @@ class TorrentApi {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0'
                 }
             }, (error, response, body) => {
-                if (error) reject(error);
-                resolve(body);
+                if ((response || {}).statusCode != 200 && !retrying && !config.appId) {
+
+                    // try 1 more time, only if no user defined app id
+
+                    app_id = randomWords(2).join('_')
+                    persist.setItem('appId', app_id)
+                    persist.removeItem('token')
+
+                    this.queryAPI(mode, params, format, true)
+                    .then(resolve)
+                    .catch(reject)
+
+                } else {
+
+                    if (error) reject(error);
+                    resolve(body);
+
+                }
             });
         });
     }
