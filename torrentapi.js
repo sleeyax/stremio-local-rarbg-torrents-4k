@@ -1,12 +1,19 @@
 const request = require('request');
 const { config, persist } = require('internal');
+const randomWords = require('./randomWords');
+const mins15 = 15 * 60 * 1000;
+
+let app_id = config.appId || persist.getItem('appId') || randomWords(2).join('_');
+
+if (!config.appId && !persist.getItem('appId'))
+    persist.setItem('appId', app_id);
 
 class TorrentApi {
-    async queryAPI(mode, params = {}, format = 'json_extended') {
-        params.app_id = config.appId;
-        params.token = persist.getItem('token') || await this.getToken(config.appId);
+    async queryAPI(mode, params = {}, format = 'json_extended', retrying) {
+        params.app_id = app_id;
+        params.token = await this.getToken();
         params.sort = config.sortingMethod;
-        params.min_seeders = config.minSeeders;
+        params.min_seeders = 1;
         params.mode = mode;
         params.format = format;
 
@@ -22,17 +29,48 @@ class TorrentApi {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0'
                 }
             }, (error, response, body) => {
-                if (error) reject(error);
-                resolve(body);
+                if ((response || {}).statusCode != 200 && !retrying && !config.appId) {
+
+                    // try 1 more time, only if no user defined app id
+
+                    // 2 sec timeout due to 1 req / 2 sec rule
+
+                    setTimeout(() => {
+
+                        app_id = randomWords(2).join('_')
+                        persist.setItem('appId', app_id)
+                        persist.removeItem('token')
+
+                        this.queryAPI(mode, params, format, true)
+                        .then(resolve)
+                        .catch(reject)
+
+                    }, 2100)
+
+                } else {
+
+                    if ((response || {}).statusCode != 200)
+                        console.log('Rarbg-4k: There was an error with the request, we recommend you change the App ID in the add-on\'s settings and restart the add-on.'
+
+                    if (error) reject(error);
+                    resolve(body);
+
+                }
             });
         });
     }
 
-    getToken(appId) {
+    getToken() {
+
+        const oldToken = persist.getItem('token');
+
+        if (oldToken && Date.now() - persist.getItem('tokenTime') < mins15)
+            return Promise.resolve(oldToken);
+
         return new Promise((resolve, reject) => {
             request({
                 uri: 'https://torrentapi.org/pubapi_v2.php',
-                qs: { get_token: 'get_token', app_id: appId },
+                qs: { get_token: 'get_token', app_id },
                 json: true,
                 headers: {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0'
@@ -41,7 +79,13 @@ class TorrentApi {
                 if (error) reject(error);
                 if (!body.token) reject('rarbg-4k: token not found in response');
                 persist.setItem('token', body.token);
-                resolve(body.token);
+                persist.setItem('tokenTime', Date.now());
+
+                // 2 second timeout between requests
+                // as per api specification
+                setTimeout(() => {
+                    resolve(body.token);
+                }, 2100);
             });
         });
     }

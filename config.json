@@ -2,19 +2,12 @@
   "appId": {
     "title": "App ID",
     "type": "string",
-    "default": "rarbg-addon-4k4",
-    "required": true
-  },
-  "minSeeders": {
-    "title": "Min. amount of seeders",
-    "type": "number",
-    "default": 0,
-    "required": true
+    "default": ""
   },
   "sortingMethod": {
     "title": "Sort",
     "type": "select",
     "options": ["seeders", "leechers", "last"],
-    "required": true
+    "default": "seeders"
   }
 }
