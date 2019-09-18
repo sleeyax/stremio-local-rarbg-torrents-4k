@@ -33,13 +33,19 @@ class TorrentApi {
 
                     // try 1 more time, only if no user defined app id
 
-                    app_id = randomWords(2).join('_')
-                    persist.setItem('appId', app_id)
-                    persist.removeItem('token')
+                    // 2 sec timeout due to 1 req / 2 sec rule
 
-                    this.queryAPI(mode, params, format, true)
-                    .then(resolve)
-                    .catch(reject)
+                    setTimeout(() => {
+
+                        app_id = randomWords(2).join('_')
+                        persist.setItem('appId', app_id)
+                        persist.removeItem('token')
+
+                        this.queryAPI(mode, params, format, true)
+                        .then(resolve)
+                        .catch(reject)
+
+                    }, 2100)
 
                 } else {
 
@@ -79,7 +85,7 @@ class TorrentApi {
                 // as per api specification
                 setTimeout(() => {
                     resolve(body.token);
-                }, 2000);
+                }, 2100);
             });
         });
     }
