@@ -3,7 +3,10 @@ const { config, persist } = require('internal');
 const randomWords = require('./randomWords');
 const mins15 = 15 * 60 * 1000;
 
-const app_id = config.appId || randomWords(2).join('_');
+let app_id = config.appId || persist.getItem('appId') || randomWords(2).join('_');
+
+if (!config.appId && !persist.getItem('appId'))
+    persist.setItem('appId', app_id);
 
 class TorrentApi {
     async queryAPI(mode, params = {}, format = 'json_extended') {
